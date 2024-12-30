@@ -15,7 +15,7 @@ if (!MONGO_URI) {
   throw new Error('Please define the MONGO_URI environment variable');
 }
 
-let cached = global.mongoose || { conn: null, promise: null };
+const cached = global.mongoose || { conn: null, promise: null };
 global.mongoose = cached;
 
 async function dbConnect(): Promise<Mongoose> {

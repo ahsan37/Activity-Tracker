@@ -27,13 +27,31 @@ ChartJS.register(
 import 'chart.js/auto';
 import 'chartjs-plugin-annotation';
 
+// Add proper types for chart components
+interface ChartProps {
+  data: {
+    labels: string[];
+    datasets: {
+      label: string;
+      data: number[];
+      backgroundColor: string | string[];
+      borderColor?: string;
+      borderWidth?: number;
+    }[];
+  };
+  options: {
+    plugins?: any;
+    scales?: any;
+  };
+}
+
 // Reusable BarChart component
-function BarChart({ data, options }: any) {
+function BarChart({ data, options }: ChartProps) {
   return <Bar data={data} options={options} />;
 }
 
 // Reusable RadarChart component
-function RadarChart({ data, options }: any) {
+function RadarChart({ data, options }: ChartProps) {
   return <Radar data={data} options={options} />;
 }
 
@@ -41,13 +59,6 @@ export default function Dashboard() {
   const [logs, setLogs] = useState<IActivityLog[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  const getColorByCompletion = (rate: number) => {
-    if (rate >= 0.8) return 'bg-green-500';
-    if (rate >= 0.6) return 'bg-yellow-500';
-    if (rate >= 0.4) return 'bg-orange-500';
-    return 'bg-red-500';
-  };
 
   useEffect(() => {
     async function fetchLogs() {

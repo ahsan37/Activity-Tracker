@@ -61,6 +61,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           const logs = await ActivityLog.find({});
           res.status(200).json(logs);
         } catch (error) {
+          console.error('Failed to fetch activity logs:', error);
           res.status(500).json({ error: 'Failed to fetch activity logs' });
         }
       } else {
