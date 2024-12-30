@@ -89,7 +89,6 @@ export default function Dashboard() {
         setLogs(data);
         setError(null);
       } catch (error) {
-        // More detailed error logging
         const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
         console.error('Error fetching logs:', {
           message: errorMessage,
@@ -97,7 +96,6 @@ export default function Dashboard() {
           error: error
         });
         
-        // More informative user-facing error message
         setError(
           `Failed to load activity logs: ${errorMessage}. ${
             error instanceof Error && error.message.includes('HTTP error')
@@ -191,7 +189,12 @@ export default function Dashboard() {
   };
 
   const formatDate = (date: Date) => {
-    return new Date(date).toLocaleDateString('en-US', {
+    // Create a new date object and adjust for timezone
+    const adjustedDate = new Date(
+      new Date(date).getTime() + new Date(date).getTimezoneOffset() * 60000
+    );
+    
+    return adjustedDate.toLocaleDateString('en-US', {
       year: 'numeric',
       month: '2-digit',
       day: '2-digit'
@@ -340,13 +343,11 @@ export default function Dashboard() {
               </div>
             </div>
 
-            {/* Activity History */}
             <div className="bg-white p-6">
               <h2 className="text-sm font-medium text-gray-600 mb-6">
                 Activity History
               </h2>
               <div className="space-y-8">
-                {/* Combined View */}
                 <div>
                   <h3 className="text-xs uppercase tracking-wider text-gray-500 mb-4">
                     All Activities
