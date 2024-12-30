@@ -40,8 +40,20 @@ interface ChartProps {
     }[];
   };
   options: {
-    plugins?: any;
-    scales?: any;
+    plugins?: {
+      legend?: {
+        display?: boolean;
+      };
+    };
+    scales?: {
+      r?: {
+        suggestedMin?: number;
+        suggestedMax?: number;
+      };
+      y?: {
+        beginAtZero?: boolean;
+      };
+    };
   };
 }
 
