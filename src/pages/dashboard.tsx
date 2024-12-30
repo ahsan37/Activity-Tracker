@@ -77,14 +77,34 @@ export default function Dashboard() {
       try {
         const response = await fetch('/api/logs');
         if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+          // Get more details from the error response
+          const errorData = await response.json().catch(() => null);
+          throw new Error(
+            `HTTP error! status: ${response.status}${
+              errorData ? `, message: ${errorData.message || JSON.stringify(errorData)}` : ''
+            }`
+          );
         }
         const data = await response.json();
         setLogs(data);
         setError(null);
       } catch (error) {
-        console.error('Error fetching logs:', error);
-        setError('Failed to load activity logs. Please try again later.');
+        // More detailed error logging
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+        console.error('Error fetching logs:', {
+          message: errorMessage,
+          timestamp: new Date().toISOString(),
+          error: error
+        });
+        
+        // More informative user-facing error message
+        setError(
+          `Failed to load activity logs: ${errorMessage}. ${
+            error instanceof Error && error.message.includes('HTTP error')
+              ? 'The server returned an error.'
+              : 'Please check your connection and try again.'
+          }`
+        );
       } finally {
         setIsLoading(false);
       }
