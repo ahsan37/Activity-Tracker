@@ -174,19 +174,6 @@ export default function Dashboard() {
     return streak;
   };
 
-  const getDaysInYear = () => {
-    const year = new Date().getFullYear();
-    const startDate = new Date(year, 0, 1);
-    const today = new Date();
-    const daysArray = [];
-
-    const currentDate = new Date(startDate);
-    while (currentDate <= today) {
-      daysArray.push(currentDate.toISOString().split('T')[0]);
-      currentDate.setDate(currentDate.getDate() + 1);
-    }
-    return daysArray;
-  };
 
   const getWeeks = () => {
     const year = new Date().getFullYear();
