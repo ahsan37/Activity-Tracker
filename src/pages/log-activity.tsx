@@ -113,13 +113,8 @@ export default function LogActivity() {
             });
 
             if (response.ok) {
-                setFormData({
-                  physicalActivity: false,
-                  reading: false,
-                  codingLearning: false,
-                  writingTweeting: false,
-                  protein: false,
-                });
+                await fetchExistingData(selectedDate);
+                alert('Activity logged successfully.');
               } else {
                 alert('Failed to log activity.');
               }
