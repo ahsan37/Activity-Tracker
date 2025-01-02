@@ -91,9 +91,7 @@ export default function LogActivity() {
       const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         
-        // Create date object and adjust for timezone
         const selectedDateTime = new Date(selectedDate);
-        // Add timezone offset to keep the date local
         const adjustedDate = new Date(
             selectedDateTime.getTime() + 
             selectedDateTime.getTimezoneOffset() * 60000

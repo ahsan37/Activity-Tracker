@@ -67,6 +67,15 @@ function RadarChart({ data, options }: ChartProps) {
   return <Radar data={data} options={options} />;
 }
 
+// Add these color constants at the top of the file
+const ACTIVITY_COLORS = {
+  physicalActivity: '#4CAF50', // Green
+  reading: '#2196F3',         // Blue
+  codingLearning: '#FFC107',  // Yellow
+  writingTweeting: '#FF5722', // Orange
+  protein: '#9C27B0'         // Purple
+};
+
 export default function Dashboard() {
   const [logs, setLogs] = useState<IActivityLog[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -180,7 +189,17 @@ export default function Dashboard() {
   };
 
   const getWeeks = () => {
-    const days = getDaysInYear();
+    const year = new Date().getFullYear();
+    const startDate = new Date(year, 0, 1);
+    const endDate = new Date(year, 11, 31);
+    const days = [];
+
+    const currentDate = new Date(startDate);
+    while (currentDate <= endDate) {
+      days.push(currentDate.toISOString().split('T')[0]);
+      currentDate.setDate(currentDate.getDate() + 1);
+    }
+
     const weeks = [];
     for (let i = 0; i < days.length; i += 7) {
       weeks.push(days.slice(i, i + 7));
@@ -189,7 +208,6 @@ export default function Dashboard() {
   };
 
   const formatDate = (date: Date) => {
-    // Create a new date object and adjust for timezone
     const adjustedDate = new Date(
       new Date(date).getTime() + new Date(date).getTimezoneOffset() * 60000
     );
@@ -204,7 +222,6 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-white p-4 sm:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto space-y-8">
-        {/* Header */}
         <div className="border-b pb-6">
           <h1 className="text-2xl font-semibold text-gray-900">Dashboard</h1>
           <p className="text-gray-500 mt-1">Track your daily progress</p>
@@ -220,9 +237,7 @@ export default function Dashboard() {
           </div>
         ) : (
           <div className="space-y-8">
-            {/* Streak Cards */}
             <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
-              {/* Combined Streak */}
               <div className="col-span-2 md:col-span-3">
                 <div className="bg-gray-50 p-6">
                   <h3 className="text-sm font-medium text-gray-600">
@@ -432,9 +447,12 @@ export default function Dashboard() {
                             return (
                               <div
                                 key={date}
-                                className={`w-3 h-3 border border-gray-200 ${
-                                  completed ? 'bg-gray-900' : 'bg-white'
-                                }`}
+                                className="w-3 h-3 border border-gray-200"
+                                style={{
+                                  backgroundColor: completed 
+                                    ? ACTIVITY_COLORS[activity.key as keyof typeof ACTIVITY_COLORS] 
+                                    : '#ffffff'
+                                }}
                                 title={`${activity.name}: ${
                                   completed ? 'Completed' : 'Not completed'
                                 } on ${new Date(date).toLocaleDateString()}`}
