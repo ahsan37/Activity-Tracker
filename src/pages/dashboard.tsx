@@ -27,7 +27,6 @@ ChartJS.register(
 import 'chart.js/auto';
 import 'chartjs-plugin-annotation';
 
-// Add proper types for chart components
 interface ChartProps {
   data: {
     labels: string[];
@@ -81,12 +80,28 @@ export default function Dashboard() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+
+  const getPastDatesInYear = () => {
+    const year = new Date().getFullYear();
+    const startDate = new Date(year, 0, 1);
+    const today = new Date();
+    // Set today to the end of the day for accurate comparison
+    today.setHours(23, 59, 59, 999);
+    const dates = [];
+
+    const currentDate = new Date(startDate);
+    while (currentDate <= today) {
+      dates.push(new Date(currentDate));
+      currentDate.setDate(currentDate.getDate() + 1);
+    }
+    return dates.reverse(); // Most recent dates first
+  };
+
   useEffect(() => {
     async function fetchLogs() {
       try {
         const response = await fetch('/api/logs');
         if (!response.ok) {
-          // Get more details from the error response
           const errorData = await response.json().catch(() => null);
           throw new Error(
             `HTTP error! status: ${response.status}${
@@ -155,12 +170,10 @@ export default function Dashboard() {
     let streak = 0;
     for (let i = 0; i < logs.length; i++) {
       const log = logs[i];
-      // For individual activity streaks
       if (activity) {
         if (log[activity]) streak++;
         else break;
       } else {
-        // For combined streak (all activities)
         const isComplete =
           log.physicalActivity &&
           log.reading &&
@@ -454,7 +467,6 @@ export default function Dashboard() {
               </div>
             </div>
 
-            {/* Activity Log Entries */}
             <div className="bg-white p-6">
               <h2 className="text-sm font-medium text-gray-600 mb-6">
                 Activity Log Entries
@@ -484,28 +496,34 @@ export default function Dashboard() {
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
-                    {logs.map((log) => (
-                      <tr key={log.date.toString()}>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          {formatDate(new Date(log.date))}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          {log.physicalActivity ? '✅' : '❌'}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          {log.reading ? '✅' : '❌'}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          {log.codingLearning ? '✅' : '❌'}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          {log.writingTweeting ? '✅' : '❌'}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          {log.protein ? '✅' : '❌'}
-                        </td>
-                      </tr>
-                    ))}
+                    {getPastDatesInYear().map((date) => {
+                      const log = logs.find(
+                        (l) => formatDate(new Date(l.date)) === formatDate(date)
+                      );
+                      
+                      return (
+                        <tr key={date.toString()}>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {formatDate(date)}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            {log?.physicalActivity ? '✅' : '❌'}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            {log?.reading ? '✅' : '❌'}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            {log?.codingLearning ? '✅' : '❌'}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            {log?.writingTweeting ? '✅' : '❌'}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            {log?.protein ? '✅' : '❌'}
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>
